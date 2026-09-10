@@ -1,0 +1,21 @@
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Secrets: never commit credentials. Use repository or environment secrets.
+.env
+.env.*
+*.pem
+*.key
+
+# Common build and dependency output
+node_modules/
+dist/
+build/
+target/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
