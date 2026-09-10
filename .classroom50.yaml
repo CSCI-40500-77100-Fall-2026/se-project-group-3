@@ -1,0 +1,12 @@
+schema: "classroom50/repo-config/v1"
+classroom: "se"
+assignment: "project"
+owner:
+  username: "sahlataher"
+  id: 198022243
+  accepted_at: "2026-09-10T16:19:34Z"
+source:
+  owner: "CSCI-40500-77100-Fall-2026"
+  owner_id: 324125850
+  repo: "Project"
+  branch: "main"
