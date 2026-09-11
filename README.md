@@ -1,16 +1,11 @@
-# Team Project
+# Product Name: Cadenza
+**Group:** Group 3
 
-> Replace this file's placeholders with your own content. Everything in angle
-> brackets is a prompt, not text to keep.
-
-**Group:** <group name>
-
-**Members:** <name (GitHub handle)>, <name (GitHub handle)>, ...
+**Members:** Fahid Ahmed (fahid82), Chris Barwicki (cbarwicki), Johnny Huang (Xcausmics), Bimukti Mozzumdar (b-mozz), Sahla Taher (sahlataher)
 
 ## Product Vision
 
-<One paragraph. For whom, what problem, and why this is worth building. See
-Engineering Software Products ch. 1.>
+For people practicing piano, who want to master all their favorite songs, Cadenza is a gamified piano-practice app that turns any song’s sheet music into a chord-by-chord challenge, rewarding clean streaks with combo multipliers and points, so that nailing a song flawlessly feels like a real victory. Unlike the limitations of other music learning tools, such as Yousician’s licensed-library gameplay, Cadenza lets you upload sheet music for any song, auto-generates a chord-by-chord game from it, and scores you with combos, streaks, leaderboards, and point penalties for mistakes, so you can ace any of song of your choice and have fun while learning.
 
 ## Running It
 
