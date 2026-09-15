@@ -17,9 +17,7 @@
         <div class="stat">
           <span id="multiplier">x1</span><label>Multiplier</label>
         </div>
-        <div class="stat">
-          <span id="detected-note">—</span><label>Heard</label>
-        </div>
+        <div class="stat"><span id="detected-note">—</span><label></label></div>
       </section>
 
       <section id="track">
@@ -33,6 +31,14 @@
       </section>
     </div>
 
+    <script type="importmap">
+      {
+        "imports": {
+          "pitchy": "https://esm.sh/pitchy@4"
+        }
+      }
+    </script>
+    <script type="module" src="game.js"></script>
     <script type="module" src="game.js"></script>
   </body>
 </html>

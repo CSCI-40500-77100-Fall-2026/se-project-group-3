@@ -1,61 +1,15 @@
-//import pitchy for pitch detection
-
+//FOR PITCH ANALYSIS-
 import { PitchDetector } from "pitchy";
 
-/*
-
-// draws one chip per note into the lane, tagged with an id
-// so matchesNote() can mark it hit/miss later
-function displayNotes(noteList) {
-  els.lane.innerHTML = "";
-  noteList.forEach((note, i) => {
-    const chip = document.createElement("div");
-    chip.className = "note-chip";
-    chip.id = `note-${i}`;
-    chip.textContent = note.replace(/\d/, "");
-    chip.style.left = `${80 + i * 70}px`;
-    els.lane.appendChild(chip);
-  });
-}
-
-//main function to ask for start, call store notes, index current note, get audio frequency, compare audio frequency, evaluate, change to next note
-function program(){
-    print("Start");
-    notes = getNotes("mary-had-a-little-lamb.pdf");
-    currentIndex = 0;
-    while (currentIndex!= notes.length){
-    currentNote = notes[currentIndex];
-    //display note
-    print("Play");
-    matchesNote(currentNote);
-    currentIndex++;
-    }
-}
-
 //pitchy instance using 2048 audio samples. returns array with detected pitch and confidence
-PitchDetector = PitchDetector.forFloat32Array(2048);
+const pitchDetector = PitchDetector.forFloat32Array(2048);
+
+//store audio into array
 const audioData = new Float32Array(2048);
 
-function detectPitch(){
-const result = PitchDetector.findPitch(
-  audioData,
-  48000
-);
-const detectedHz = result[0];
-return detectedHz;
-};
 
-//function to detect frequency against target
-function matchesNote(currentNote) {
-    targetHz = noteFrequencies[currentNote];
-    detectedHz = detectPitch();
-  const candidates = [detectedHz, detectedHz / 2, detectedHz * 2]; //room for some flexibility
-  for(let i = 0; i <3; i++)
-    if(candidates[i] === targetHz) 
-        return "Correct";
-    return "Incorrect";
-}
-------------------*/
+
+//ELEMENTS
 const els = {
   startBtn: document.getElementById("start-btn"),
   detectedNote: document.getElementById("detected-note"),
@@ -79,6 +33,9 @@ let notes = []; //stores notes of song
 let currentIndex = 0; //keeps track of current note
 let listening = false; 
 let songsheet = ""; //song file being used
+let audioCtx;
+let analyser;
+
 
 //extract notes from songsheet
 function getNotes(songsheet) {
@@ -92,8 +49,9 @@ function getNotes(songsheet) {
   ];
 }
 
+
+//display notes
 function displayNotes(noteList) {
-    //get the notes to display
   els.lane.innerHTML = "";
 
   noteList.forEach((note, i) => {
@@ -107,29 +65,26 @@ function displayNotes(noteList) {
   });
 }
 
-//
-function detectPitch() {
-  //MOCK: pretend the player always plays the correct note
-  const currentNote = notes[currentIndex];
-  return noteFrequencies[currentNote];
+//detect user input frequency
+function detectPitch(analyser, sampleRate) {
+  analyser.getFloatTimeDomainData(audioData);
+
+  const pitch = pitchDetector.findPitch(
+  audioData,
+  sampleRate
+);
+return pitch[0];
 }
 
+
+//checks if notes are a match
 function matchesNote(detectedHz, targetHz) {
   const tolerance = 5;
-  return Math.abs(detectedHz - targetHz) <= tolerance;
+  //return Math.abs(detectedHz - targetHz) <= tolerance;
+  return true;
 }
 
-async function program() {
-
-  notes = getNotes("mary-had-a-little-lamb.pdf");
-  currentIndex = 0;
-
-  displayNotes(notes);
-
-  listening = true;
-
-  const interval = setInterval(() => {
-
+function program(){
     if (!listening) {
       clearInterval(interval);
       return;
@@ -142,7 +97,7 @@ async function program() {
     }
 
     //get detected pitch
-    const detectedHz = detectPitch();
+    const detectedHz = detectPitch(analyser,audioCtx.sampleRate);
 
     //get current note from song
     const currentNote = notes[currentIndex];
@@ -151,18 +106,52 @@ async function program() {
     const targetHz = noteFrequencies[currentNote];
 
     //print the current note and the detected note
-    els.detectedNote.textContent =
-      `${currentNote} (${detectedHz} Hz)`;
+   
+  // show the note immediately
+    els.detectedNote.textContent = currentNote + " (listening...)";
 
-    //if note is correct
-    if (matchesNote(detectedHz, targetHz)) {
-    //print correct good job etc
-    }
-    currentIndex++;
+    // wait 3 seconds before evaluating
+    setTimeout(() => {
+      const detectedHz = detectPitch(analyser, audioCtx.sampleRate);
 
-  }, 500);
+      // show detected pitch
+      els.detectedNote.textContent =
+        currentNote + " (" + detectedHz.toFixed(1) + " Hz)";
+
+      // always correct for now
+      if (matchesNote(detectedHz, targetHz)) {
+        els.detectedNote.textContent =
+          currentNote+ " CORRECT";
+      }
+        currentIndex++;
+setTimeout(() => {
+      program();   // move to next note AFTER showing CORRECT
+    }, 800);
+ }, 1500);
+}
+
+async function setup() {
+// ask permission to use mic, streams raw audio
+const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+//creates web audio environment. we use this for capturing live mic input
+audioCtx = new AudioContext();
+//stores the audio stream into web audio node
+const source = audioCtx.createMediaStreamSource(stream);
+//initialize analyser node to read audio
+analyser = audioCtx.createAnalyser();
+//take 2048 samples at a time
+analyser.fftSize = 2048;
+//connect the web audio node to the analyser node so it can be read later
+source.connect(analyser);
+
+notes = getNotes("mary-had-a-little-lamb.pdf");
+  currentIndex = 0;
+  
+  displayNotes(notes);
+  listening = true;
+  program();
 }
 
 els.startBtn.addEventListener("click", () => {
- program();
+ setup();
 });
