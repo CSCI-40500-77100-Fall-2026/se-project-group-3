@@ -33,6 +33,12 @@ export default function SongSelect() {
 
   const selectedSong = songs.find((song) => song.id === selectedId) ?? filteredSongs[0];
 
+  function handlePlay() {
+    if (selectedSong?.id === "mary-had-a-little-lamb") {
+      window.location.href = "/game/homepage.html";
+    }
+  }
+
   return (
     <div
       className="song-select"
@@ -93,7 +99,7 @@ export default function SongSelect() {
         <button type="button" className="back-button">
           ← Back
         </button>
-        <button type="button" className="play-button" aria-label="Play song">
+        <button type="button" className="play-button" aria-label="Play song" onClick={handlePlay}>
           ▶
         </button>
       </footer>

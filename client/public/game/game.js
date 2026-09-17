@@ -1,45 +1,39 @@
-//FOR PITCH ANALYSIS-
 import { PitchDetector } from "pitchy";
 
-//pitchy instance using 2048 audio samples. returns array with detected pitch and confidence
 const pitchDetector = PitchDetector.forFloat32Array(2048);
 
-//store audio into array
 const audioData = new Float32Array(2048);
 
-
-
-//ELEMENTS
 const els = {
   startBtn: document.getElementById("start-btn"),
   detectedNote: document.getElementById("detected-note"),
   lane: document.getElementById("notes-lane"),
+  status: document.getElementById("status"),
 };
 
-
- //notes and their frequencies
 const noteFrequencies = {
   C4: 261.63,
   D4: 293.66,
   E4: 329.63,
   F4: 349.23,
-  G4: 392.00,
-  A4: 440.00,
+  G4: 392.0,
+  A4: 440.0,
   B4: 493.88,
 };
 
-//initial game state
-let notes = []; //stores notes of song
-let currentIndex = 0; //keeps track of current note
-let listening = false; 
-let songsheet = ""; //song file being used
+const MIN_CLARITY = 0.85;
+const MATCH_TOLERANCE_CENTS = 50;
+const LISTEN_TIMEOUT_MS = 4000;
+const POLL_INTERVAL_MS = 100;
+const NOTE_GAP_MS = 500;
+
+let notes = [];
+let currentIndex = 0;
+let listening = false;
 let audioCtx;
 let analyser;
 
-
-//extract notes from songsheet
 function getNotes(songsheet) {
-    //mary had a little lamb for demo
   return [
     "E4", "D4", "C4", "D4", "E4", "E4", "E4",
     "D4", "D4", "D4",
@@ -49,109 +43,132 @@ function getNotes(songsheet) {
   ];
 }
 
-
-//display notes
 function displayNotes(noteList) {
   els.lane.innerHTML = "";
 
   noteList.forEach((note, i) => {
     const chip = document.createElement("div");
-
     chip.className = "note-chip";
     chip.id = `note-${i}`;
-    chip.textContent = note.replace(/\d/, "");
-
+    chip.textContent = note;
     els.lane.appendChild(chip);
   });
 }
 
-//detect user input frequency
-function detectPitch(analyser, sampleRate) {
+function setChipState(index, state) {
+  const chip = document.getElementById(`note-${index}`);
+  if (!chip) return;
+  chip.classList.remove("current", "correct", "missed");
+  if (state) chip.classList.add(state);
+}
+
+function detectPitch() {
   analyser.getFloatTimeDomainData(audioData);
-
-  const pitch = pitchDetector.findPitch(
-  audioData,
-  sampleRate
-);
-return pitch[0];
+  return pitchDetector.findPitch(audioData, audioCtx.sampleRate);
 }
 
+function centsOff(detectedHz, targetHz) {
+  return 1200 * Math.log2(detectedHz / targetHz);
+}
 
-//checks if notes are a match
 function matchesNote(detectedHz, targetHz) {
-  const tolerance = 5;
-  //return Math.abs(detectedHz - targetHz) <= tolerance;
-  return true;
+  if (!detectedHz || detectedHz <= 0) return false;
+  return Math.abs(centsOff(detectedHz, targetHz)) <= MATCH_TOLERANCE_CENTS;
 }
 
-function program(){
-    if (!listening) {
-      clearInterval(interval);
-      return;
-    }
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-    if (currentIndex >= notes.length) {
-      els.detectedNote.textContent = "Song complete!";
-      clearInterval(interval);
-      return;
-    }
+function listenForNote(targetHz, currentNote) {
+  return new Promise((resolve) => {
+    const startedAt = performance.now();
 
-    //get detected pitch
-    const detectedHz = detectPitch(analyser,audioCtx.sampleRate);
+    const poll = () => {
+      if (!listening) {
+        resolve(false);
+        return;
+      }
 
-    //get current note from song
+      const [detectedHz, clarity] = detectPitch();
+
+      if (clarity >= MIN_CLARITY) {
+        els.detectedNote.textContent = `${currentNote} (${detectedHz.toFixed(1)} Hz)`;
+        if (matchesNote(detectedHz, targetHz)) {
+          resolve(true);
+          return;
+        }
+      }
+
+      if (performance.now() - startedAt >= LISTEN_TIMEOUT_MS) {
+        resolve(false);
+        return;
+      }
+
+      setTimeout(poll, POLL_INTERVAL_MS);
+    };
+
+    poll();
+  });
+}
+
+async function program() {
+  while (listening && currentIndex < notes.length) {
     const currentNote = notes[currentIndex];
-
-    //get the frequency of the current note
     const targetHz = noteFrequencies[currentNote];
 
-    //print the current note and the detected note
-   
-  // show the note immediately
-    els.detectedNote.textContent = currentNote + " (listening...)";
+    setChipState(currentIndex, "current");
+    els.detectedNote.textContent = `${currentNote} (listening...)`;
 
-    // wait 3 seconds before evaluating
-    setTimeout(() => {
-      const detectedHz = detectPitch(analyser, audioCtx.sampleRate);
+    const isCorrect = await listenForNote(targetHz, currentNote);
+    if (!listening) break;
 
-      // show detected pitch
-      els.detectedNote.textContent =
-        currentNote + " (" + detectedHz.toFixed(1) + " Hz)";
+    setChipState(currentIndex, isCorrect ? "correct" : "missed");
+    els.detectedNote.textContent = isCorrect
+      ? `${currentNote} CORRECT`
+      : `${currentNote} missed`;
 
-      // always correct for now
-      if (matchesNote(detectedHz, targetHz)) {
-        els.detectedNote.textContent =
-          currentNote+ " CORRECT";
-      }
-        currentIndex++;
-setTimeout(() => {
-      program();   // move to next note AFTER showing CORRECT
-    }, 800);
- }, 1500);
+    currentIndex++;
+    await wait(NOTE_GAP_MS);
+  }
+
+  if (listening) {
+    els.detectedNote.textContent = "Song complete!";
+    els.status.textContent = "Done";
+    listening = false;
+  }
 }
 
 async function setup() {
-// ask permission to use mic, streams raw audio
-const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-//creates web audio environment. we use this for capturing live mic input
-audioCtx = new AudioContext();
-//stores the audio stream into web audio node
-const source = audioCtx.createMediaStreamSource(stream);
-//initialize analyser node to read audio
-analyser = audioCtx.createAnalyser();
-//take 2048 samples at a time
-analyser.fftSize = 2048;
-//connect the web audio node to the analyser node so it can be read later
-source.connect(analyser);
+  els.status.textContent = "Requesting mic access...";
 
-notes = getNotes("mary-had-a-little-lamb.pdf");
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch (err) {
+    els.status.textContent = "Mic access denied";
+    return;
+  }
+
+  audioCtx = new AudioContext();
+  if (audioCtx.state === "suspended") {
+    await audioCtx.resume();
+  }
+
+  const source = audioCtx.createMediaStreamSource(stream);
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 2048;
+  source.connect(analyser);
+
+  notes = getNotes("mary-had-a-little-lamb.pdf");
   currentIndex = 0;
-  
+
   displayNotes(notes);
   listening = true;
+  els.status.textContent = "Listening...";
   program();
 }
 
 els.startBtn.addEventListener("click", () => {
- setup();
+  setup();
 });
