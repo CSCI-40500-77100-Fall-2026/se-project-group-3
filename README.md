@@ -9,11 +9,27 @@ For people practicing piano, who want to master all their favorite songs, Cadenz
 
 ## Running It
 
-<How a reader who has never seen this repo gets it running. Assume nothing.>
+This prototype uses a React framework to run a
+ HTML/JavaScript piano learning mini-game.
 
-```
-<commands>
-```
+1. Install dependencies and start the dev server:
+  cd client
+  npm install
+  npm run dev
+
+2. Open  local URL (`http://localhost:5173`) in the
+  browser and enable microphone input to detect piano audio.
+
+3. Song selection screen: Navigate the song list, click a
+  song to preview it, then hit the play button (Currently we only have
+  Mary had a little Lamb implemented).
+
+4. Game screen: click "Start Listening" and allow microphone
+  access when prompted. Sing or play each highlighted note on a
+  piano (I used a paino emulator during testing) near your mic; 
+  the app listens the notes, and matches the pitch it 
+  hears against the target note, and advances the sequence
+  lane. (Not added yet but it should update your score, streak, and multiplier)
 
 ## Testing
 
