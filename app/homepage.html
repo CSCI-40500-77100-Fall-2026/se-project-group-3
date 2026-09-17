@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Cadenza — Prototype</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>Cadenza</h1>
+      </header>
+
+      <section id="hud">
+        <div class="stat"><span id="score">0</span><label>Score</label></div>
+        <div class="stat"><span id="streak">0</span><label>Streak</label></div>
+        <div class="stat">
+          <span id="multiplier">x1</span><label>Multiplier</label>
+        </div>
+        <div class="stat"><span id="detected-note">—</span><label></label></div>
+      </section>
+
+      <section id="track">
+        <div id="target-marker"></div>
+        <div id="notes-lane"></div>
+      </section>
+
+      <section id="controls">
+        <button id="start-btn">Start Listening</button>
+        <div id="status">Mic idle</div>
+      </section>
+    </div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "pitchy": "https://esm.sh/pitchy@4"
+        }
+      }
+    </script>
+    <script type="module" src="game.js"></script>
+    <script type="module" src="game.js"></script>
+  </body>
+</html>
