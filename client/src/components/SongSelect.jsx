@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { songs } from "../data/songs.js";
 import InfoPanel from "./InfoPanel.jsx";
 import SongPanel from "./SongPanel.jsx";
+import { Link } from "react-router-dom";
 
 const SORTS = ["Title", "Artist", "Difficulty"];
 
@@ -33,11 +34,11 @@ export default function SongSelect() {
 
   const selectedSong = songs.find((song) => song.id === selectedId) ?? filteredSongs[0];
 
-  function handlePlay() {
-    if (selectedSong?.id === "mary-had-a-little-lamb") {
-      window.location.href = "/game/homepage.html";
-    }
-  }
+  // function handlePlay() {
+  //   if (selectedSong?.id === "mary-had-a-little-lamb") {
+  //     window.location.href = "/game/homepage.html";
+  //   }
+  // }
 
   return (
     <div
@@ -99,9 +100,14 @@ export default function SongSelect() {
         <button type="button" className="back-button">
           ← Back
         </button>
-        <button type="button" className="play-button" aria-label="Play song" onClick={handlePlay}>
-          ▶
-        </button>
+        <Link to="/upload" className="upload-button">
+          Upload Song
+        </Link>
+        <Link to="/play" className="play-link">
+          <button type="button" className="play-button" aria-label="Play song">
+            ▶
+          </button>
+        </Link>
       </footer>
     </div>
   );
