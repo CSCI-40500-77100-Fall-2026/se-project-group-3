@@ -97,9 +97,14 @@ export default function SongSelect() {
       </main>
 
       <footer className="song-select__bottombar">
-        <button type="button" className="back-button">
-          ← Back
-        </button>
+        <div className="song-select__left-actions">
+          <button type="button" className="back-button">
+            ← Back
+          </button>
+          <Link to="/signup" className="signup-button">
+            Sign Up
+          </Link>
+        </div>
         <Link to="/upload" className="upload-button">
           Upload Song
         </Link>
