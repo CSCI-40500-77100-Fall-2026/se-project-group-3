@@ -17,7 +17,7 @@ function sortSongs(list, sortBy) {
   return sorted;
 }
 
-export default function SongSelect() {
+export default function SongSelect({ onPlaySong }) {
   const [query, setQuery] = useState("");
   const [sortBy, setSortBy] = useState("Title");
   const [selectedId, setSelectedId] = useState(songs[0].id);
@@ -34,7 +34,9 @@ export default function SongSelect() {
   const selectedSong = songs.find((song) => song.id === selectedId) ?? filteredSongs[0];
 
   function handlePlay() {
-    if (selectedSong?.id === "mary-had-a-little-lamb") {
+    if (onPlaySong) {
+      onPlaySong(selectedSong);
+    } else if (selectedSong?.id === "mary-had-a-little-lamb") {
       window.location.href = "/game/homepage.html";
     }
   }
