@@ -1,0 +1,34 @@
+# Continuous integration.
+#
+# The syllabus requires working tests invoked via CI each week. This workflow is
+# deliberately minimal and language-agnostic: replace the "Run tests" step with
+# whatever your project actually uses (pytest, npm test, mvn test, go test, ...)
+# and add a setup step for your language.
+#
+# A red build is not a penalty in itself. A build that has been red for weeks,
+# or a green build that runs no tests, is the thing to avoid.
+
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    # Skipped in the template repository itself, which holds no project to test.
+    # A repository created from this template has a different name, so CI runs
+    # there and fails until the placeholder below is replaced.
+    if: github.repository != 'CSCI-40500-77100-Fall-2026/Project'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # - name: Set up <language>
+      #   uses: actions/setup-<language>@v4
+
+      - name: Run tests
+        run: |
+          echo "TODO: replace with the project's real test command."
+          exit 1
