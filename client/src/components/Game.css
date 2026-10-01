@@ -8,7 +8,9 @@
   --paper: #f2ede4;
   --brass: #d3a24c;
   --brass-dim: #8a713a;
-  --miss: #c15b4a;
+  --miss: #c15b4a;  
+  --correct-green: #4ade80;
+  --miss-red: #ef4444;
   --text: #f2ede4;
   --text-dim: #9497a8;
 
@@ -85,6 +87,15 @@
   background: var(--stage-raised);
   padding: 16px 12px;
   text-align: center;
+    transition: background 0.15s ease;
+}
+
+.cadenza-game__stat--correct {
+  background: rgba(74, 222, 128, 0.25);
+}
+
+.cadenza-game__stat--missed {
+  background: rgba(239, 68, 68, 0.25);
 }
 
 .cadenza-game__stat span {
@@ -93,6 +104,14 @@
   font-size: 1.6rem;
   color: var(--brass);
 }
+.cadenza-game__stat--correct span {
+  color: var(--correct-green);
+}
+
+
+.cadenza-game__stat--missed span {
+  color: var(--miss-red);
+}
 
 .cadenza-game__stat label {
   display: block;
@@ -100,6 +119,7 @@
   font-size: 0.78rem;
   color: var(--text-dim);
 }
+
 
 /* Track / note lane */
 .cadenza-game__track {
@@ -149,15 +169,15 @@
 }
 
 .cadenza-game__note-chip--correct {
-  border-color: var(--brass);
-  background: var(--brass);
+   border-color: var(--correct-green);
+  background: var(--correct-green);
   color: var(--stage);
 }
 
 .cadenza-game__note-chip--missed {
-  border-color: var(--miss);
-  color: var(--miss);
-  background: rgba(193, 91, 74, 0.12);
+  border-color: var(--miss-red);
+  color: var(--miss-red);
+  background: rgba(239, 68, 68, 0.18);
 }
 
 /* Controls */
@@ -224,4 +244,5 @@
   .cadenza-game__stat {
     min-width: 45%;
   }
+  
 }

@@ -59,6 +59,7 @@ export default function Game({ song, onBack }) {
   const [streak, setStreak] = useState(0);
   const [multiplier, setMultiplier] = useState(1);
   const [detectedNoteText, setDetectedNoteText] = useState("—");
+  const [resultState, setResultState] = useState(null); // null | "correct" | "missed" for notes
   const [statusText, setStatusText] = useState("Mic idle");
   const [listening, setListening] = useState(false);
   const [chipStates, setChipStates] = useState({}); // { [index]: "current" | "correct" | "missed" }
@@ -141,7 +142,6 @@ export default function Game({ song, onBack }) {
     let currentScore = 0;
     let currentStreak = 0;
     let currentMultiplier = 1;
-
     for (let i = 0; i < songNotes.length; i++) {
       if (!isListeningRef.current) break;
 
@@ -150,6 +150,7 @@ export default function Game({ song, onBack }) {
 
       // Mark current chip
       setChipStates((prev) => ({ ...prev, [i]: "current" }));
+      setResultState(null);
       setDetectedNoteText(`${currentNote} (listening...)`);
 
       const isCorrect = await listenForNote(targetHz, currentNote);
@@ -165,6 +166,7 @@ export default function Game({ song, onBack }) {
         setScore(currentScore);
         setChipStates((prev) => ({ ...prev, [i]: "correct" }));
         setDetectedNoteText(`${currentNote} CORRECT`);
+        setResultState("correct");
       } else {
         currentStreak = 0;
         currentMultiplier = 1;
@@ -173,6 +175,7 @@ export default function Game({ song, onBack }) {
         setMultiplier(1);
         setChipStates((prev) => ({ ...prev, [i]: "missed" }));
         setDetectedNoteText(`${currentNote} missed`);
+        setResultState("missed");
       }
 
       await wait(NOTE_GAP_MS);
@@ -191,6 +194,7 @@ export default function Game({ song, onBack }) {
       cleanupAudio();
       setStatusText("Stopped");
       setDetectedNoteText("—");
+      setResultState(null);
       return;
     }
 
@@ -230,6 +234,10 @@ export default function Game({ song, onBack }) {
 
     runGameProgram(notes);
   }
+ const pitchBoxClass =
+    resultState === "correct" ? "cadenza-game__stat stat cadenza-game__stat--correct" :
+    resultState === "missed"  ? "cadenza-game__stat stat cadenza-game__stat--missed" :
+    "cadenza-game__stat stat";
 
   return (
     <div className="cadenza-game" id="app">
@@ -263,7 +271,7 @@ export default function Game({ song, onBack }) {
             <span id="multiplier">x{multiplier}</span>
             <label>Multiplier</label>
           </div>
-          <div className="cadenza-game__stat stat">
+          <div className={pitchBoxClass}>
             <span id="detected-note">{detectedNoteText}</span>
             <label>Pitch</label>
           </div>
