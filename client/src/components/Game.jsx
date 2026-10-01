@@ -234,10 +234,11 @@ export default function Game({ song, onBack }) {
 
     runGameProgram(notes);
   }
- const pitchBoxClass =
-    resultState === "correct" ? "cadenza-game__stat stat cadenza-game__stat--correct" :
-    resultState === "missed"  ? "cadenza-game__stat stat cadenza-game__stat--missed" :
-    "cadenza-game__stat stat";
+  
+const hudClass =
+  resultState === "correct" ? "cadenza-game__hud cadenza-game__hud--correct" :
+  resultState === "missed"  ? "cadenza-game__hud cadenza-game__hud--missed" :
+  "cadenza-game__hud";
 
   return (
     <div className="cadenza-game" id="app">
@@ -258,7 +259,7 @@ export default function Game({ song, onBack }) {
           )}
         </header>
 
-        <section className="cadenza-game__hud" id="hud">
+        <section className={hudClass} id="hud">
           <div className="cadenza-game__stat stat">
             <span id="score">{score}</span>
             <label>Score</label>
@@ -271,7 +272,7 @@ export default function Game({ song, onBack }) {
             <span id="multiplier">x{multiplier}</span>
             <label>Multiplier</label>
           </div>
-          <div className={pitchBoxClass}>
+          <div className="cadenza-game__stat stat">
             <span id="detected-note">{detectedNoteText}</span>
             <label>Pitch</label>
           </div>

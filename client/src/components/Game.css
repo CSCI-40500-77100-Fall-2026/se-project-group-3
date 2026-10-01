@@ -90,12 +90,22 @@
     transition: background 0.15s ease;
 }
 
-.cadenza-game__stat--correct {
-  background: rgba(74, 222, 128, 0.25);
+/* Whole HUD turns green on a correct note */
+.cadenza-game__hud--correct .cadenza-game__stat {
+  background: #4ade80;
+}
+.cadenza-game__hud--correct .cadenza-game__stat span,
+.cadenza-game__hud--correct .cadenza-game__stat label {
+  color: #11351f;
 }
 
-.cadenza-game__stat--missed {
-  background: rgba(239, 68, 68, 0.25);
+/* Whole HUD turns red on a missed note */
+.cadenza-game__hud--missed .cadenza-game__stat {
+  background: #ef4444;
+}
+.cadenza-game__hud--missed .cadenza-game__stat span,
+.cadenza-game__hud--missed .cadenza-game__stat label {
+  color: #ffffff;
 }
 
 .cadenza-game__stat span {
@@ -104,14 +114,7 @@
   font-size: 1.6rem;
   color: var(--brass);
 }
-.cadenza-game__stat--correct span {
-  color: var(--correct-green);
-}
 
-
-.cadenza-game__stat--missed span {
-  color: var(--miss-red);
-}
 
 .cadenza-game__stat label {
   display: block;
