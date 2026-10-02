@@ -18,7 +18,7 @@ function sortSongs(list, sortBy) {
   return sorted;
 }
 
-export default function SongSelect() {
+export default function SongSelect({ onPlaySong }) {
   const [query, setQuery] = useState("");
   const [sortBy, setSortBy] = useState("Title");
   const [selectedId, setSelectedId] = useState(songs[0].id);
