@@ -4,8 +4,6 @@ import UploadSong from "./components/UploadSong.jsx";
 import SignUp from "./components/SignUp.jsx";
 import Game from "./components/Game.jsx";
 
-import { useState } from "react";
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 
