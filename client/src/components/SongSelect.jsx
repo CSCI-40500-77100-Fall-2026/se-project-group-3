@@ -108,7 +108,7 @@ export default function SongSelect({ onPlaySong }) {
         <Link to="/upload" className="upload-button">
           Upload Song
         </Link>
-        <Link to="/play" className="play-link">
+        <Link to="/game" className="play-link">
           <button type="button" className="play-button" aria-label="Play song">
             ▶
           </button>

@@ -1,19 +1,23 @@
 import { useState } from "react";
 import SongSelect from "./components/SongSelect.jsx";
-import PlaySong from "./components/PlaySong.jsx";
 import UploadSong from "./components/UploadSong.jsx";
 import SignUp from "./components/SignUp.jsx";
+import Game from "./components/Game.jsx";
+
+import { useState } from "react";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 
 function App() {
 
+  const [activeSong, setActiveSong] = useState(null);
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<SongSelect />} />
-        <Route path="/play" element={<PlaySong />} />
+        <Route path="/game" element={<Game song={activeSong} onBack={() => setActiveSong(null)} />} />
         <Route path="/upload" element={<UploadSong />} />
         <Route path="/signup" element={<SignUp />} />
       </Routes>
