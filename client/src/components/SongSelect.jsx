@@ -3,6 +3,8 @@ import { songs } from "../data/songs.js";
 import InfoPanel from "./InfoPanel.jsx";
 import SongPanel from "./SongPanel.jsx";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+
 
 const SORTS = ["Title", "Artist", "Difficulty"];
 
@@ -22,6 +24,8 @@ export default function SongSelect({ onPlaySong }) {
   const [query, setQuery] = useState("");
   const [sortBy, setSortBy] = useState("Title");
   const [selectedId, setSelectedId] = useState(songs[0].id);
+
+  const { user, setUser, signOut, loading } = useAuth();
 
   const filteredSongs = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -101,9 +105,24 @@ export default function SongSelect({ onPlaySong }) {
           <button type="button" className="back-button">
             ← Back
           </button>
-          <Link to="/signup" className="signup-button">
-            Sign Up
-          </Link>
+          {!user && (
+            <>
+              <Link to="/signup" className="signup-button">
+                Sign Up
+              </Link>
+              <Link to="/login" className="login-button">
+                Log In
+              </Link>
+            </>
+          )}
+          {user && (
+            <>
+              <button type="button" className="logout-button" onClick={signOut}>
+                Log Out
+              </button>
+              <span className="user-greeting">{user.username}</span>
+            </>
+          )}
         </div>
         <Link to="/upload" className="upload-button">
           Upload Song

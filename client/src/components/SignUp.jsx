@@ -8,6 +8,8 @@ export default function SignUp() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [message, setMessage] = useState("");
 
+    const [showPassword, setShowPassword] = useState(false);
+
     async function handleSubmit(event) {
         event.preventDefault();
         setIsSubmitting(true);
@@ -66,13 +68,23 @@ export default function SignUp() {
                         <input
                             id="signup-password"
                             className="upload-form__input"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             name="password"
                             autoComplete="new-password"
                             value={password}
                             onChange={(event) => setPassword(event.target.value)}
                             required
                         />
+                        <label className="password-checkbox">
+                            <input
+                                id="signup-show-password"
+                                className="password-checkbox__input"
+                                type="checkbox"
+                                checked={showPassword}
+                                onChange={(event) => setShowPassword(event.target.checked)}
+                            />
+                            <span>Show password</span>
+                        </label>
 
                         <button className="upload-form__submit" type="submit" disabled={isSubmitting}>
                             {isSubmitting ? "Creating account..." : "Sign Up"}
