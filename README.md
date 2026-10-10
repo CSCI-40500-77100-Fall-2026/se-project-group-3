@@ -20,6 +20,14 @@ Engineering Software Products ch. 1.>
 <commands>
 ```
 
+### Docker
+
+<How to run your published Docker image: the `docker run` command, plus the ports, volumes, and environment variables it needs, if any.>
+
+```
+<commands>
+```
+
 ## Testing
 
 <How to run the tests, and what they cover.>
