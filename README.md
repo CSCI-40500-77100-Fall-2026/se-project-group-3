@@ -31,6 +31,14 @@ This prototype uses a React framework to run a
   hears against the target note, and advances the sequence
   lane. (Not added yet but it should update your score, streak, and multiplier)
 
+### Docker
+
+<How to run your published Docker image: the `docker run` command, plus the ports, volumes, and environment variables it needs, if any.>
+
+```
+<commands>
+```
+
 ## Testing
 
 <How to run the tests, and what they cover.>
