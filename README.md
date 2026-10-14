@@ -33,10 +33,32 @@ This prototype uses a React framework to run a
 
 ### Docker
 
-<How to run your published Docker image: the `docker run` command, plus the ports, volumes, and environment variables it needs, if any.>
+The image runs both the React client (port **5173**) and the Express API
+(port **3000**). Map both ports to the same numbers on your machine, because
+the client calls the API at `http://localhost:3000`.
+
+It needs two environment variables:
+
+- `MONGO_URI`: a MongoDB connection string (for example, a free MongoDB Atlas
+  cluster). For a MongoDB running on your own machine, use
+  `mongodb://host.docker.internal:27017/cadenza`.
+- `JWT_SECRET`: any secret string, used to sign login tokens.
 
 ```
-<commands>
+docker pull bmozz/cadenza:latest
+docker run --rm -p 5173:5173 -p 3000:3000 \
+  -e MONGO_URI="<your MongoDB connection string>" \
+  -e JWT_SECRET="<any secret string>" \
+  bmozz/cadenza:latest
+```
+
+Then open `http://localhost:5173` and allow microphone access when prompted.
+Press `Ctrl+C` to stop the container.
+
+To build the image yourself from the repository root:
+
+```
+docker build -t bmozz/cadenza .
 ```
 
 ## Testing
