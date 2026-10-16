@@ -30,7 +30,8 @@ Engineering Software Products ch. 1.>
 
 ## Architecture
 
-See [docs/architecture.md](docs/architecture.md).
+See [docs/architecture.md](docs/architecture.md) and, for the microservice,
+[docs/microservice.md](docs/microservice.md).
 
 ## Working Agreement
 
