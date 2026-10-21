@@ -21,6 +21,7 @@ const songSchema = new mongoose.Schema({
   coverImage: { type: String, required: true },
   stars: { type: Number, required: true },
   length: { type: Number, required: true },
+  tempo_bpm: { type: Number, default: 100 },
   notes: [noteSchema],
 });
 

@@ -14,6 +14,7 @@ const songs = [
     coverImage: "/images/mary-had-a-little-lamb.jpg",
     stars: 1.0,
     length: 32,
+    tempo_bpm: 100,
     notes: [
       { index: 0, note: "E4", midi: 64, freq_hz: 329.63, start_beat: 0, duration_beats: 1 },
       { index: 1, note: "D4", midi: 62, freq_hz: 293.66, start_beat: 1, duration_beats: 1 },
