@@ -1,12 +1,24 @@
-
+const Song = require("../models/Song");
 
 const getSongs = async (req, res) => {
     try{
-        console.log("testing get songs")
-        res.json({ message: "testing get songs" });
+        const songs = await Song.find();
+        res.json({
+            songs: songs.map((song) => ({
+                id: song.songId,
+                title: song.title,
+                artist: song.artist,
+                arranger: song.arranger,
+                coverColor: song.coverColor,
+                coverImage: song.coverImage,
+                stars: song.stars,
+                length: song.length,
+            })),
+        });
     }
     catch (err) {
         console.log(err)
+        res.status(500).json({ message: "Internal server error" });
     }
 }
 

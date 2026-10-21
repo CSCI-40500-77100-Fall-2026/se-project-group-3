@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
-import { songs } from "../data/songs.js";
+import { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 import InfoPanel from "./InfoPanel.jsx";
 import SongPanel from "./SongPanel.jsx";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { API_URL } from "../api.js";
 
 
 const SORTS = ["Title", "Artist", "Difficulty"];
@@ -21,11 +22,29 @@ function sortSongs(list, sortBy) {
 }
 
 export default function SongSelect({ onPlaySong }) {
+  const [songs, setSongs] = useState([]);
+  const [songsLoading, setSongsLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [sortBy, setSortBy] = useState("Title");
-  const [selectedId, setSelectedId] = useState(songs[0].id);
+  const [selectedId, setSelectedId] = useState(null);
 
   const { user, setUser, signOut, loading } = useAuth();
+
+  useEffect(() => {
+    async function fetchSongs() {
+      try {
+        const response = await axios.get(`${API_URL}/songs`);
+        setSongs(response.data.songs);
+        setSelectedId(response.data.songs[0]?.id ?? null);
+      } catch (error) {
+        setSongs([]);
+      } finally {
+        setSongsLoading(false);
+      }
+    }
+
+    fetchSongs();
+  }, []);
 
   const filteredSongs = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -34,7 +53,7 @@ export default function SongSelect({ onPlaySong }) {
         !q || song.title.toLowerCase().includes(q) || song.artist.toLowerCase().includes(q)
     );
     return sortSongs(matched, sortBy);
-  }, [query, sortBy]);
+  }, [songs, query, sortBy]);
 
   const selectedSong = songs.find((song) => song.id === selectedId) ?? filteredSongs[0];
 
@@ -94,7 +113,8 @@ export default function SongSelect({ onPlaySong }) {
               onSelect={setSelectedId}
             />
           ))}
-          {filteredSongs.length === 0 && (
+          {songsLoading && <p className="song-list__empty">Loading songs...</p>}
+          {!songsLoading && filteredSongs.length === 0 && (
             <p className="song-list__empty">No songs match your search.</p>
           )}
         </div>
