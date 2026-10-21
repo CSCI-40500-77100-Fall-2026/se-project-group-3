@@ -79,9 +79,12 @@ const signInUser = async (req, res) => {
 			{ expiresIn: "24h" }
 		); 
 
-		res.cookie("token", token, { 
-			httpOnly: true, 
-			maxAge: 24 * 60 * 60 * 1000 
+		const isProd = process.env.NODE_ENV === "production";
+		res.cookie("token", token, {
+			httpOnly: true,
+			sameSite: isProd ? "none" : "lax",
+			secure: isProd,
+			maxAge: 24 * 60 * 60 * 1000
 		});
 
 		res.status(200).json({ 
@@ -96,8 +99,11 @@ const signInUser = async (req, res) => {
 // http://localhost:3000/users/signout
 const signOutUser = (req, res) => {
 	try {
+		const isProd = process.env.NODE_ENV === "production";
 		res.clearCookie("token", {
 			httpOnly: true,
+			sameSite: isProd ? "none" : "lax",
+			secure: isProd,
 		});
 		return res.status(200).json({ message: "Sign out successful" });
 	} catch (err) {

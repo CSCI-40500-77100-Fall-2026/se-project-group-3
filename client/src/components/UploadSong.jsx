@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { API_URL } from "../api.js";
 
 export default function UploadSong() {
   const [file, setFile] = useState(null);
@@ -13,7 +14,7 @@ export default function UploadSong() {
 
     formData.append("audio", file);
 
-    const response = await axios.post("http://localhost:3000/songs/upload", formData);
+    const response = await axios.post(`${API_URL}/songs/upload`, formData);
 
     const data = response.data;
 

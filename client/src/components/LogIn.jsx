@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../api.js";
 
 export default function LogIn() {
 
@@ -22,7 +23,7 @@ export default function LogIn() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/users/signin", 
+        `${API_URL}/users/signin`,
         {
           username: username.trim(),
           password,
