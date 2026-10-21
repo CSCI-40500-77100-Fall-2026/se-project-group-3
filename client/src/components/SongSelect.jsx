@@ -57,12 +57,6 @@ export default function SongSelect({ onPlaySong }) {
 
   const selectedSong = songs.find((song) => song.id === selectedId) ?? filteredSongs[0];
 
-  // function handlePlay() {
-  //   if (selectedSong?.id === "mary-had-a-little-lamb") {
-  //     window.location.href = "/game/homepage.html";
-  //   }
-  // }
-
   return (
     <div
       className="song-select"
@@ -147,8 +141,8 @@ export default function SongSelect({ onPlaySong }) {
         <Link to="/upload" className="upload-button">
           Upload Song
         </Link>
-        <Link to="/game" className="play-link">
-          <button type="button" className="play-button" aria-label="Play song">
+        <Link to="/game" state={{ song: selectedSong }} className="play-link">
+          <button type="button" className="play-button" aria-label="Play song" disabled={!selectedSong}>
             ▶
           </button>
         </Link>

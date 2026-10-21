@@ -13,6 +13,7 @@ const getSongs = async (req, res) => {
                 coverImage: song.coverImage,
                 stars: song.stars,
                 length: song.length,
+                notes: song.notes,
             })),
         });
     }
