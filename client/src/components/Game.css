@@ -391,18 +391,38 @@
   border-radius: 0 0 4px 4px;
 }
 
-.cadenza-game__key--white span {
-  font-size: 0.7rem;
+.cadenza-game__key span {
   font-weight: 700;
-  color: rgba(0, 0, 0, 0.45);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.cadenza-game__key--white span {
+  font-size: 0.65rem;
+  color: rgba(0, 0, 0, 0.38);
+}
+
+.cadenza-game__key--white .cadenza-game__key-label--c {
+  color: rgba(0, 0, 0, 0.7);
 }
 
 .cadenza-game__key--black {
   z-index: 1;
   height: 62%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 6px;
   background: linear-gradient(180deg, #1c1c24 0%, #2c2c36 85%, #3a3a46 100%);
   border-radius: 0 0 3px 3px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.cadenza-game__key--black span {
+  font-size: 0.5rem;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .cadenza-game__key--white.cadenza-game__key--next {

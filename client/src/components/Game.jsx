@@ -75,6 +75,13 @@ function keyGeometry(width) {
   const blackWidth = Math.round(whiteWidth * BLACK_KEY_RATIO);
   const offset = Math.floor((width - whiteWidth * WHITE_KEY_COUNT) / 2);
   return {
+    // Narrow screens can't fit every label, so shorten ("C#1" -> "C#") or drop them instead of overlapping.
+    labelWhiteKeys: whiteWidth >= 18,
+    blackLabel(key) {
+      if (blackWidth >= 20) return key.note;
+      if (blackWidth >= 12) return key.note.replace(/-?\d+$/, "");
+      return null;
+    },
     box(key) {
       if (key.type === "white") {
         return { left: offset + key.slot * whiteWidth, width: whiteWidth };
@@ -656,7 +663,9 @@ export default function Game({ song, onBack }) {
                 .join(" ")}
               style={keyStyle(key)}
             >
-              {key.isC && <span>{key.note}</span>}
+              {(key.isC || geometry.labelWhiteKeys) && (
+                <span className={key.isC ? "cadenza-game__key-label--c" : undefined}>{key.note}</span>
+              )}
             </div>
           ))}
           {BLACK_KEYS.map((key) => (
@@ -674,7 +683,9 @@ export default function Game({ song, onBack }) {
                 .filter(Boolean)
                 .join(" ")}
               style={keyStyle(key)}
-            />
+            >
+              {geometry.blackLabel(key) && <span>{geometry.blackLabel(key)}</span>}
+            </div>
           ))}
         </div>
       </div>
