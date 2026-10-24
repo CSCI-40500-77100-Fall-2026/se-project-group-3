@@ -1,0 +1,19 @@
+{
+  "name": "scores-service",
+  "version": "1.0.0",
+  "description": "Cadenza leaderboard microservice: stores game scores in its own database and ranks them per song.",
+  "main": "server.js",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^18.0.4",
+    "express": "^5.2.1",
+    "mongoose": "^9.10.3"
+  }
+}
