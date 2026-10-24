@@ -277,6 +277,70 @@
   font-size: 1.2rem;
 }
 
+.song-leaderboard {
+  width: min(380px, 100%);
+  margin-top: 1.5rem;
+  padding: 1rem 1.1rem;
+  background: rgba(10, 10, 16, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+}
+
+.song-leaderboard__title {
+  margin: 0 0 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.song-leaderboard__note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.song-leaderboard__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.song-leaderboard__row {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr auto auto;
+  align-items: baseline;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.song-leaderboard__rank {
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.song-leaderboard__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.song-leaderboard__accuracy {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.song-leaderboard__score {
+  font-weight: 800;
+}
+
 .song-select__bottombar {
   position: fixed;
   left: 0;

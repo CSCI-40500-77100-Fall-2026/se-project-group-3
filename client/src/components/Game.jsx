@@ -1,4 +1,6 @@
 import { useMemo, useRef, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
 import { PitchDetector } from "pitchy";
 import axios from "axios";
 import { API_URL } from "../api.js";
@@ -112,6 +114,13 @@ function noteNameFromHz(hz) {
   return `${NOTE_NAMES[midi % 12]}${Math.floor(midi / 12) - 1}`;
 }
 
+function accuracyFor(counts) {
+  const attempted = counts.perfect + counts.great + counts.good + counts.missed;
+  const weightedHits =
+    counts.perfect * TIER_WEIGHT.perfect + counts.great * TIER_WEIGHT.great + counts.good * TIER_WEIGHT.good;
+  return attempted > 0 ? (weightedHits / attempted) * 100 : 100;
+}
+
 function gradeFor(accuracy) {
   if (accuracy >= 100) return "SS";
   if (accuracy >= 95) return "S";
@@ -179,10 +188,9 @@ export default function Game({ song, onBack }) {
   const [submission, setSubmission] = useState({ status: "idle" });
   const [leaderboardVersion, setLeaderboardVersion] = useState(0);
 
-  const attempted = counts.perfect + counts.great + counts.good + counts.missed;
-  const weightedHits =
-    counts.perfect * TIER_WEIGHT.perfect + counts.great * TIER_WEIGHT.great + counts.good * TIER_WEIGHT.good;
-  const accuracy = attempted > 0 ? (weightedHits / attempted) * 100 : 100;
+  const accuracy = accuracyFor(counts);
+  const { user } = useAuth();
+  const [submission, setSubmission] = useState(null); // { status, rank?, totalPlayers?, bestScore?, message? }
 
   const isRunningRef = useRef(false);
   const pausedRef = useRef(false);
@@ -424,6 +432,7 @@ export default function Game({ song, onBack }) {
     setHiddenNotes({});
     setFeedback(null);
     setNextNoteIndex(0);
+    setSubmission(null);
     setElapsedMs(0);
     setPlayId((id) => id + 1);
     setSubmission({ status: "idle" });
