@@ -26,18 +26,12 @@ graph TD
         Middleware["API Middleware - CORS, Cookie Parser, JWT Auth, Multer"]
         UserController["Users Controller - Auth, Signup, Login, Bcrypt"]
         SongController["Songs Controller - Catalog and Audio Uploads"]
-        ScoresController["Scores Controller - Forwards to Scores Service, Timeout and Retry"]
-    end
-
-    subgraph ScoresService["Scores Microservice - Node.js / Express, deployed separately"]
-        ScoresAPI["Scores API - Record Runs, Leaderboards, API Key Check"]
     end
 
     subgraph Data["Data Layer - MongoDB and Storage"]
         Mongoose["Mongoose ODM"]
-        MongoDB[("MongoDB Database cadenza - Users, Songs")]
+        MongoDB[("MongoDB Database - Users, Songs, Scores")]
         FileStorage[("File Storage - server/uploads")]
-        ScoresDB[("MongoDB Database cadenza-scores - Scores, Best Scores")]
     end
 
     AudioEngine -->|Detected Pitch Hz| GameEngine
@@ -49,10 +43,6 @@ graph TD
 
     Middleware -->|Users Routes| UserController
     Middleware -->|Songs Routes| SongController
-    Middleware -->|Scores Routes| ScoresController
-    ScoresController -->|"REST, x-api-key"| ScoresAPI
-    ScoresController -->|Check User and Song Exist| Mongoose
-    ScoresAPI -->|Read and Write| ScoresDB
 
     UserController -->|User Schema Operations| Mongoose
     SongController -->|Song Metadata| Mongoose
@@ -96,9 +86,5 @@ Table 4.8, belong here too.>
 | **Server:** Public Cloud PaaS (e.g. Render / AWS + Atlas) | In-house physical servers, Serverless (AWS Lambda) | Zero hardware maintenance; containerized Node instance easily handles audio file uploads and persistent routing. |
 
 | **Open-Source:** MIT/Apache 2.0 (`pitchy`, `bcrypt`, `multer`) | Commercial audio SDKs, GPL libraries (Aubio) | Open-source licenses avoid licensing fees and copyleft constraints while providing fast, lightweight pitch detection. |
-
-| **Leaderboard as a microservice** (`scores-service/`) with its own database | Scores routes and a `Score` model inside the main Express server | Scores have the cleanest boundary (only a song id and a player) and a different load from logins and uploads, so the split is cheap, and a scores outage only hides the leaderboard. Costs: a second deployment and database, and network calls that need timeouts and retries. See [microservice.md](microservice.md). |
-
-| **Browser calls the main server, which calls the scores service** | Browser calls the scores service directly | The main server already knows who is logged in from the JWT cookie and owns the user and song data needed to validate a score. Separate Vercel domains would not share the login cookie, and clients cannot forge scores for other users. |
 
 | **Dev Tools:** Vite + Express | Next.js (SSR), Rails | Decoupled client/server architecture avoids SSR conflicts with browser-only Web Audio APIs and allows independent scaling. |

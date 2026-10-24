@@ -1,8 +1,6 @@
-# Cadenza: React/Vite client + Express API + scores microservice in one image.
+# Cadenza: React/Vite client + Express API in one image.
 # The client calls the API at http://localhost:3000 and the API only allows
 # CORS from http://localhost:5173, so both run here on those same ports.
-# The scores service listens on 4000 inside the container only; the browser
-# never calls it directly.
 
 # ---- Build the client ----
 FROM node:22-slim AS client-build
@@ -21,11 +19,6 @@ WORKDIR /app
 COPY server/package.json server/package-lock.json ./server/
 RUN cd server && npm ci --omit=dev
 COPY server/ ./server/
-
-# Scores microservice: its own dependencies (uses the lockfile when present)
-COPY scores-service/package*.json ./scores-service/
-RUN cd scores-service && npm install --omit=dev --no-audit --no-fund
-COPY scores-service/ ./scores-service/
 
 # Client: built files plus vite, which `vite preview` needs to serve them
 COPY --from=client-build /app/client ./client

@@ -1,4 +1,4 @@
-import Leaderboard from "./Leaderboard.jsx";
+import SongLeaderboard from "./SongLeaderboard.jsx";
 
 function formatDuration(totalSec) {
   const minutes = Math.floor(totalSec / 60);
@@ -26,7 +26,7 @@ export default function InfoPanel({ song }) {
 
       <span className="star-rating star-rating--large">★ {song.stars.toFixed(2)}</span>
 
-      <Leaderboard songId={song.id} limit={5} title="Top scores" />
+      <SongLeaderboard songId={song.id} />
     </div>
   );
 }

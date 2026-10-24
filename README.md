@@ -25,22 +25,6 @@ This prototype uses a React framework to run a
   the app listens the notes, and matches the pitch it 
   hears against the target note, increasing your score, streak, and multiplier
 
-### Running locally (for development)
-
-Cadenza is three processes: the React client, the main Express API, and the
-scores microservice (the leaderboard). Each has its own `.env`; copy the
-`.env.example` next to it and fill it in. `SCORES_API_KEY` must be the same in
-`server/.env` and `scores-service/.env`.
-
-```
-cd scores-service && npm install && npm run dev   # leaderboard on :4000
-cd server && npm install && npm run dev           # API on :3000
-cd client && npm install && npm run dev           # app on :5173
-```
-
-The scores service is optional: without it, or with `SCORES_SERVICE_URL`
-unset, the app works and the leaderboard shows "unavailable".
-
 ### Docker
 
 The image runs both the React client (port **5173**) and the Express API
@@ -53,12 +37,6 @@ It needs two environment variables:
   cluster). For a MongoDB running on your own machine, use
   `mongodb://host.docker.internal:27017/cadenza`.
 - `JWT_SECRET`: any secret string, used to sign login tokens.
-
-To also run the leaderboard (scores microservice) inside the container, add:
-
-- `SCORES_MONGO_URI`: a connection string for the scores service's **own**
-  database, for example the same cluster with `/cadenza-scores` instead of
-  `/cadenza` at the end. Without it the leaderboard shows "unavailable".
 
 ```
 docker pull bmozz/cadenza:latest
@@ -79,14 +57,10 @@ docker build -t bmozz/cadenza .
 
 ## Testing
 
-The scores microservice has integration tests (`scores-service/test/`) that
-cover the API key check, input validation, duplicate submissions, personal
-bests and leaderboard ranking. They need a throwaway MongoDB database, which
-they drop when they finish:
+<How to run the tests, and what they cover.>
 
 ```
-cd scores-service
-TEST_SCORES_MONGO_URI=mongodb://localhost:27017/cadenza-scores-test npm test
+<commands>
 ```
 
 ## Architecture
