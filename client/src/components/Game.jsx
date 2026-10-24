@@ -1,5 +1,9 @@
 import { useMemo, useRef, useState, useEffect } from "react";
 import { PitchDetector } from "pitchy";
+import axios from "axios";
+import { API_URL } from "../api.js";
+import { useAuth } from "../context/AuthContext";
+import Leaderboard from "./Leaderboard.jsx";
 import "./Game.css";
 
 const ENHARMONIC_ALIASES = { Db: "C#", Eb: "D#", Gb: "F#", Ab: "G#", Bb: "A#" };
@@ -123,6 +127,7 @@ function formatTime(ms) {
 }
 
 export default function Game({ song, onBack }) {
+  const { user } = useAuth();
   const noteObjects = useMemo(
     () => song?.notes ?? DEFAULT_NOTES.map((note, index) => ({ note, start_beat: index, duration_beats: 1 })),
     [song]
@@ -170,6 +175,9 @@ export default function Game({ song, onBack }) {
   const [elapsedMs, setElapsedMs] = useState(0);
   const [micError, setMicError] = useState(null);
   const [playfieldSize, setPlayfieldSize] = useState(DEFAULT_PLAYFIELD_SIZE);
+  // Saving the finished run to the leaderboard: idle | saving | saved | error | guest
+  const [submission, setSubmission] = useState({ status: "idle" });
+  const [leaderboardVersion, setLeaderboardVersion] = useState(0);
 
   const attempted = counts.perfect + counts.great + counts.good + counts.missed;
   const weightedHits =
@@ -291,11 +299,49 @@ export default function Game({ song, onBack }) {
     setNextNoteIndex(index + 1);
   }
 
+  // Sends the finished run to the main server, which forwards it to the scores
+  // microservice. Reads judgeStateRef because state values in this closure can lag.
+  async function submitScore() {
+    if (!song?.id) return; // the built-in fallback song has no leaderboard
+    if (!user) {
+      setSubmission({ status: "guest" });
+      return;
+    }
+
+    const final = judgeStateRef.current;
+    const total = final.counts.perfect + final.counts.great + final.counts.good + final.counts.missed;
+    const weighted =
+      final.counts.perfect * TIER_WEIGHT.perfect +
+      final.counts.great * TIER_WEIGHT.great +
+      final.counts.good * TIER_WEIGHT.good;
+
+    setSubmission({ status: "saving" });
+    try {
+      const response = await axios.post(
+        `${API_URL}/scores`,
+        {
+          songId: song.id,
+          score: final.score,
+          maxCombo: final.maxCombo,
+          accuracy: total > 0 ? (weighted / total) * 100 : 0,
+          speed,
+        },
+        { withCredentials: true, timeout: 10000 }
+      );
+      setSubmission({ status: "saved", ...response.data });
+    } catch {
+      setSubmission({ status: "error" });
+    } finally {
+      setLeaderboardVersion((v) => v + 1);
+    }
+  }
+
   function finishSong() {
     releaseAudio();
     setElapsedMs(totalDurationMs);
     setFeedback(null);
     setPhase("finished");
+    submitScore();
   }
 
   function tick() {
@@ -380,6 +426,7 @@ export default function Game({ song, onBack }) {
     setNextNoteIndex(0);
     setElapsedMs(0);
     setPlayId((id) => id + 1);
+    setSubmission({ status: "idle" });
     setPhase("playing");
 
     startTimeRef.current = performance.now();
@@ -627,6 +674,25 @@ export default function Game({ song, onBack }) {
                     <span className="cadenza-game__tier--good">Good {counts.good}</span>
                     <span className="cadenza-game__tier--missed">Miss {counts.missed}</span>
                   </div>
+                  {submission.status !== "idle" && (
+                    <p className={`cadenza-game__save cadenza-game__save--${submission.status}`}>
+                      {submission.status === "saving" && "Saving your score..."}
+                      {submission.status === "saved" &&
+                        (submission.isPersonalBest
+                          ? `New personal best! Rank #${submission.rank}`
+                          : `Score saved. Your best: ${submission.personalBest.toLocaleString()}`)}
+                      {submission.status === "error" && "Couldn't save your score to the leaderboard."}
+                      {submission.status === "guest" && "Log in to save your score to the leaderboard."}
+                    </p>
+                  )}
+                  {song?.id && (
+                    <Leaderboard
+                      songId={song.id}
+                      limit={5}
+                      refreshKey={leaderboardVersion}
+                      highlightUsername={user?.username}
+                    />
+                  )}
                   <p className="cadenza-game__panel-label">Speed</p>
                   {speedPicker}
                   <div className="cadenza-game__panel-actions">
