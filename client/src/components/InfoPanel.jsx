@@ -1,3 +1,5 @@
+import SongLeaderboard from "./SongLeaderboard.jsx";
+
 function formatDuration(totalSec) {
   const minutes = Math.floor(totalSec / 60);
   const seconds = totalSec % 60;
@@ -23,6 +25,8 @@ export default function InfoPanel({ song }) {
       </div>
 
       <span className="star-rating star-rating--large">★ {song.stars.toFixed(2)}</span>
+
+      <SongLeaderboard songId={song.id} />
     </div>
   );
 }

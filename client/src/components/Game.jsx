@@ -1,5 +1,9 @@
 import { useMemo, useRef, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
 import { PitchDetector } from "pitchy";
+import { useAuth } from "../context/AuthContext";
+import { API_URL } from "../api.js";
 import "./Game.css";
 
 const ENHARMONIC_ALIASES = { Db: "C#", Eb: "D#", Gb: "F#", Ab: "G#", Bb: "A#" };
@@ -108,6 +112,13 @@ function noteNameFromHz(hz) {
   return `${NOTE_NAMES[midi % 12]}${Math.floor(midi / 12) - 1}`;
 }
 
+function accuracyFor(counts) {
+  const attempted = counts.perfect + counts.great + counts.good + counts.missed;
+  const weightedHits =
+    counts.perfect * TIER_WEIGHT.perfect + counts.great * TIER_WEIGHT.great + counts.good * TIER_WEIGHT.good;
+  return attempted > 0 ? (weightedHits / attempted) * 100 : 100;
+}
+
 function gradeFor(accuracy) {
   if (accuracy >= 100) return "SS";
   if (accuracy >= 95) return "S";
@@ -171,10 +182,9 @@ export default function Game({ song, onBack }) {
   const [micError, setMicError] = useState(null);
   const [playfieldSize, setPlayfieldSize] = useState(DEFAULT_PLAYFIELD_SIZE);
 
-  const attempted = counts.perfect + counts.great + counts.good + counts.missed;
-  const weightedHits =
-    counts.perfect * TIER_WEIGHT.perfect + counts.great * TIER_WEIGHT.great + counts.good * TIER_WEIGHT.good;
-  const accuracy = attempted > 0 ? (weightedHits / attempted) * 100 : 100;
+  const accuracy = accuracyFor(counts);
+  const { user } = useAuth();
+  const [submission, setSubmission] = useState(null); // { status, rank?, totalPlayers?, bestScore?, message? }
 
   const isRunningRef = useRef(false);
   const pausedRef = useRef(false);
@@ -291,11 +301,41 @@ export default function Game({ song, onBack }) {
     setNextNoteIndex(index + 1);
   }
 
+  async function submitScore(state) {
+    if (!song?.id) return; // free practice with no song: nothing to rank
+    if (!user) {
+      setSubmission({ status: "guest" });
+      return;
+    }
+
+    setSubmission({ status: "saving" });
+    try {
+      const response = await axios.post(
+        `${API_URL}/scores`,
+        {
+          songId: song.id,
+          score: state.score,
+          accuracy: Math.round(accuracyFor(state.counts) * 100) / 100,
+          maxCombo: state.maxCombo,
+          speed,
+        },
+        { withCredentials: true, timeout: 15000 }
+      );
+      setSubmission(response.status === 202 ? { status: "queued" } : { status: "saved", ...response.data });
+    } catch (error) {
+      setSubmission({
+        status: "error",
+        message: error.response?.data?.message ?? "Couldn't save your score.",
+      });
+    }
+  }
+
   function finishSong() {
     releaseAudio();
     setElapsedMs(totalDurationMs);
     setFeedback(null);
     setPhase("finished");
+    submitScore(judgeStateRef.current);
   }
 
   function tick() {
@@ -378,6 +418,7 @@ export default function Game({ song, onBack }) {
     setHiddenNotes({});
     setFeedback(null);
     setNextNoteIndex(0);
+    setSubmission(null);
     setElapsedMs(0);
     setPlayId((id) => id + 1);
     setPhase("playing");
@@ -627,6 +668,32 @@ export default function Game({ song, onBack }) {
                     <span className="cadenza-game__tier--good">Good {counts.good}</span>
                     <span className="cadenza-game__tier--missed">Miss {counts.missed}</span>
                   </div>
+                  {submission && (
+                    <div className={`cadenza-game__submission cadenza-game__submission--${submission.status}`}>
+                      {submission.status === "saving" && "Saving your score…"}
+                      {submission.status === "saved" && (
+                        <>
+                          <strong>
+                            Rank #{submission.rank} of {submission.totalPlayers}
+                          </strong>{" "}
+                          on this song
+                          {submission.bestScore > score && (
+                            <span className="cadenza-game__submission-best">
+                              Your best: {submission.bestScore.toLocaleString()}
+                            </span>
+                          )}
+                        </>
+                      )}
+                      {submission.status === "queued" &&
+                        "The leaderboard is offline. Your score will be added when it's back."}
+                      {submission.status === "guest" && (
+                        <>
+                          <Link to="/login">Log in</Link> to save your score to the leaderboard.
+                        </>
+                      )}
+                      {submission.status === "error" && submission.message}
+                    </div>
+                  )}
                   <p className="cadenza-game__panel-label">Speed</p>
                   {speedPicker}
                   <div className="cadenza-game__panel-actions">

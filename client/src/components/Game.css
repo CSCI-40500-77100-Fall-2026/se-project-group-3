@@ -15,6 +15,7 @@
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
+  overflow: clip; /* hidden still lets focus or scrollIntoView scroll the box; clip cannot be scrolled */
   display: flex;
   flex-direction: column;
   background: var(--bg);
@@ -158,6 +159,7 @@
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  overflow: clip;
   background: linear-gradient(180deg, rgba(8, 8, 12, 0.55) 0%, rgba(8, 8, 12, 0.85) 100%);
 }
 
@@ -646,6 +648,39 @@
   font-size: 0.85rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+.cadenza-game__submission {
+  margin: -6px 0 20px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.cadenza-game__submission strong {
+  color: var(--text);
+}
+
+.cadenza-game__submission--saved {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.cadenza-game__submission--error {
+  color: var(--miss);
+}
+
+.cadenza-game__submission a {
+  color: #fff;
+  font-weight: 700;
+}
+
+.cadenza-game__submission-best {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.8rem;
 }
 
 .cadenza-game__tier--perfect {
