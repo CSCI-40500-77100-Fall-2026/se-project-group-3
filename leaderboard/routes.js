@@ -68,12 +68,21 @@ async function standingFor(songId, userId) {
   };
 }
 
-router.get("/health", (req, res) => {
-  const connected = mongoose.connection.readyState === 1;
-  res.status(connected ? 200 : 503).json({
-    status: connected ? "ok" : "degraded",
-    database: connected ? "connected" : "disconnected",
-  });
+const HEALTH_TIMEOUT_MS = 3000;
+
+router.get("/health", async (req, res) => {
+  // A freshly started serverless instance is often still connecting when the
+  // first request arrives, so wait briefly for the connection and ping it
+  // rather than reporting whatever state it happens to be in at that instant.
+  try {
+    await Promise.race([
+      mongoose.connection.asPromise().then(() => mongoose.connection.db.admin().ping()),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), HEALTH_TIMEOUT_MS)),
+    ]);
+    res.json({ status: "ok", database: "connected" });
+  } catch {
+    res.status(503).json({ status: "degraded", database: "disconnected" });
+  }
 });
 
 router.post("/scores", requireApiKey, async (req, res) => {
