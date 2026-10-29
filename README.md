@@ -32,6 +32,10 @@ Engineering Software Products ch. 1.>
 
 See [docs/architecture.md](docs/architecture.md).
 
+## Security and Privacy
+
+See [docs/security-privacy.md](docs/security-privacy.md).
+
 ## Working Agreement
 
 This repository is the single home for the group's work, and its **commit
