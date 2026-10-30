@@ -68,6 +68,10 @@ docker build -t bmozz/cadenza .
 See [docs/architecture.md](docs/architecture.md) and, for the microservice,
 [docs/microservice.md](docs/microservice.md).
 
+## Security and Privacy
+
+See [docs/security-privacy.md](docs/security-privacy.md).
+
 ## Working Agreement
 
 This repository is the single home for the group's work, and its **commit
