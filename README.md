@@ -57,11 +57,35 @@ docker build -t bmozz/cadenza .
 
 ## Testing
 
-<How to run the tests, and what they cover.>
+The client uses **Vitest** to run automated tests.
 
+### How to Run Tests
+
+From the repository root, run:
+
+```bash
+cd client
+npm ci
+npm test
 ```
-<commands>
+
+To build the application for production, run:
+
+```bash
+npm run build
 ```
+
+### What the Tests Cover
+
+The current automated tests cover the `StarRating` component:
+
+- Verifies that the component renders ten stars.
+- Verifies that the correct difficulty label is displayed.
+- Verifies that zero difficulty displays no filled stars.
+
+### Continuous Integration
+
+GitHub Actions automatically installs client dependencies, runs the automated tests, and builds the application on pushes, pull requests, and manual workflow dispatches.
 
 ## Architecture
 
