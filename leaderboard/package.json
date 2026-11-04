@@ -1,0 +1,20 @@
+{
+  "name": "leaderboard",
+  "version": "1.0.0",
+  "description": "Cadenza leaderboard microservice: stores game scores and ranks players per song",
+  "private": true,
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.4",
+    "express": "^5.2.1",
+    "mongoose": "^9.10.3"
+  }
+}
