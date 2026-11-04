@@ -1,5 +1,17 @@
 const User = require("../models/User") // import User
-const { generateSecret, generateURI, verify } = require("otplib")
+// otplib is loaded with a dynamic import() instead of require():
+// otplib's CommonJS build require()s @scure/base, which is ESM-only. Vercel's runtime
+// can't require() ESM, so a top-level require("otplib") crashed the whole API on startup.
+// import() works from CommonJS and loads otplib's ESM build instead.
+// it's loaded once, on first use, and cached.
+let otplibPromise
+const loadOtplib = () => {
+  if (!otplibPromise) {
+    otplibPromise = import("otplib")
+  }
+  return otplibPromise
+}
+
 const QRCode = require("qrcode")
 const { encrypt, decrypt } = require("../utils/encryption")
 const { setAuthCookie, clearPendingCookie } = require("../utils/authCookie")
@@ -18,6 +30,7 @@ const setUpTOTP = async (req, res) => {
     }
 
     // generate secret. generateSecret is imported from otplib
+    const { generateSecret, generateURI } = await loadOtplib()
     const secret = generateSecret()
     // encrypt the secret and save it in the database
     user.totpSecret = encrypt(secret)
@@ -53,6 +66,10 @@ const checkTOTP = async (user, token) => {
     //
     return false
   }
+
+  // outside the try below on purpose: if otplib fails to load, that's a server error (500),
+  // not an "invalid code"
+  const { verify } = await loadOtplib()
 
   let secret
 
