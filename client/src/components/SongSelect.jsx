@@ -135,6 +135,9 @@ export default function SongSelect({ onPlaySong }) {
                 Log Out
               </button>
               <span className="user-greeting">{user.username}</span>
+              <Link to="/settings/security" className="login-button">
+                Security
+              </Link>
             </>
           )}
         </div>

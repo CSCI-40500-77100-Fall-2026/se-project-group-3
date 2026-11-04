@@ -3,6 +3,7 @@ import UploadSong from "./components/UploadSong.jsx";
 import SignUp from "./components/SignUp.jsx";
 import LogIn from "./components/LogIn.jsx";
 import Game from "./components/Game.jsx";
+import TwoFactorSetup from "./components/TwoFactorSetup.jsx";
 
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
@@ -22,6 +23,7 @@ function App() {
       <Route path="/upload" element={<UploadSong />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/login" element={<LogIn />} />
+      <Route path="/settings/security" element={<TwoFactorSetup />} />
     </Routes>
   );
 }
