@@ -3,6 +3,7 @@ const usersController = require("../../controllers/usersController");
 const totpController = require("../../controllers/totpController");
 const authenticate = require("../../middleware/auth");
 const requirePendingTwoFactor = require("../../middleware/pendingTwoFactor");
+const { totpVerifyLimiter } = require("../../middleware/rateLimit");
 const router = express.Router();
 
 
@@ -16,8 +17,8 @@ router.post("/totp/setup", authenticate, totpController.setUpTOTP);
 router.post("/totp/verify-setup", authenticate, totpController.verifyTOTPSetUp);
 
 // 2FA sign-in step 2: user has only passed the password step
-// TODO: add rate limiting here (6-digit codes are brute-forceable)
-router.post("/totp/verify-signin", requirePendingTwoFactor, totpController.verifyTOTPSignIn);
+// order matters: the limiter counts per user, so it needs req.userId from requirePendingTwoFactor
+router.post("/totp/verify-signin", requirePendingTwoFactor, totpVerifyLimiter, totpController.verifyTOTPSignIn);
 
 
 module.exports = router;
