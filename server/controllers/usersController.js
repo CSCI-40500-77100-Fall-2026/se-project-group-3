@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const { setAuthCookie, clearAuthCookie, setPendingCookie, clearPendingCookie } = require("../utils/authCookie");
 
 // http://localhost:3000/users/me
 const getCurrentUser = async (req, res) => {
@@ -72,39 +72,31 @@ const signInUser = async (req, res) => {
 			return res.status(401).json({ message: "Invalid password" });
 		}
 
-		// creates jwt authentication token
-		const token = jwt.sign(
-			{ userId: user._id }, 
-			process.env.JWT_SECRET, 
-			{ expiresIn: "24h" }
-		); 
+		// 2FA on: password is correct but don't log in yet.
+		// issue a short-lived pending cookie; the client then sends the code to /users/totp/verify-signin
+		if (user.totpEnabled) {
+			setPendingCookie(res, user._id);
+			return res.status(200).json({ totpRequired: true });
+		}
 
-		const isProd = process.env.NODE_ENV === "production";
-		res.cookie("token", token, {
-			httpOnly: true,
-			sameSite: isProd ? "none" : "lax",
-			secure: isProd,
-			maxAge: 24 * 60 * 60 * 1000
-		});
+		// 2FA off: log in straight away
+		setAuthCookie(res, user._id);
 
-		res.status(200).json({ 
-			message: "Sign in successful", 
-			user: user 
+		return res.status(200).json({
+			message: "Sign in successful",
+			user: user
 		});
 	} catch (err) {
 		console.log(err);
+		return res.status(500).json({ message: "Internal server error" });
 	}
 };
 
 // http://localhost:3000/users/signout
 const signOutUser = (req, res) => {
 	try {
-		const isProd = process.env.NODE_ENV === "production";
-		res.clearCookie("token", {
-			httpOnly: true,
-			sameSite: isProd ? "none" : "lax",
-			secure: isProd,
-		});
+		clearAuthCookie(res);
+		clearPendingCookie(res);
 		return res.status(200).json({ message: "Sign out successful" });
 	} catch (err) {
 		console.log(err);
