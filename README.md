@@ -32,6 +32,10 @@ Engineering Software Products ch. 1.>
 
 See [docs/architecture.md](docs/architecture.md).
 
+## Defensive Programming
+
+See [docs/defensive-programming.md](docs/defensive-programming.md).
+
 ## Working Agreement
 
 This repository is the single home for the group's work, and its **commit
