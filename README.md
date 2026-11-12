@@ -96,6 +96,10 @@ See [docs/architecture.md](docs/architecture.md) and, for the microservice,
 
 See [docs/security-privacy.md](docs/security-privacy.md).
 
+## Defensive Programming
+
+See [docs/defensive-programming.md](docs/defensive-programming.md).
+
 ## Working Agreement
 
 This repository is the single home for the group's work, and its **commit
