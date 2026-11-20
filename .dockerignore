@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/.env
+**/.env.*
+**/*.pem
+**/*.key
+server/uploads
+.git
+.github
+docs
+**/.DS_Store
