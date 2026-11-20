@@ -1,14 +1,14 @@
 /**
  * Validation utilities for user input fields.
  * Validates the two core fields on account registration:
- * 1. Username (Custom domain logic: format, length 3-20, allowed characters)
+ * 1. Username (Custom domain logic: format, length 3-40, allowed characters)
  * 2. Password (Minimum length requirement: at least 8 characters)
  */
 
 /**
  * Validates a username according to custom domain rules:
  * - Must be a non-empty string.
- * - Must be between 3 and 20 characters in length.
+ * - Must be between 3 and 40 characters in length.
  * - Must start with an alphanumeric character (letter or number).
  * - Can only contain letters, numbers, underscores, and hyphens.
  *
@@ -26,8 +26,8 @@ export function validateUsername(username) {
     return { isValid: false, error: "Username must be at least 3 characters long." };
   }
 
-  if (trimmed.length > 20) {
-    return { isValid: false, error: "Username cannot exceed 20 characters." };
+  if (trimmed.length > 40) {
+    return { isValid: false, error: "Username cannot exceed 40 characters." };
   }
 
   if (!/^[a-zA-Z0-9]/.test(trimmed)) {

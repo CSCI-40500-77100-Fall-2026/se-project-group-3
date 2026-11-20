@@ -7,11 +7,14 @@ test("Server Validation - Field 1: Username format (custom domain logic)", () =>
   assert.equal(validateUsername("pianist_99").isValid, true);
   assert.equal(validateUsername("mozart-123").isValid, true);
   assert.equal(validateUsername("abc").isValid, true);
+  assert.equal(validateUsername("a".repeat(40)).isValid, true);
 
   // Invalid inputs
   assert.equal(validateUsername("").isValid, false);
   assert.equal(validateUsername("ab").isValid, false);
   assert.equal(validateUsername("ab").error, "Username must be at least 3 characters long.");
+  assert.equal(validateUsername("a".repeat(41)).isValid, false);
+  assert.equal(validateUsername("a".repeat(41)).error, "Username cannot exceed 40 characters.");
   assert.equal(validateUsername("_badstart").isValid, false);
   assert.equal(validateUsername("has space").isValid, false);
 });

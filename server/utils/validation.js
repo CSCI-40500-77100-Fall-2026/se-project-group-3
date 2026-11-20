@@ -16,8 +16,8 @@ function validateUsername(username) {
     return { isValid: false, error: "Username must be at least 3 characters long." };
   }
 
-  if (trimmed.length > 20) {
-    return { isValid: false, error: "Username cannot exceed 20 characters." };
+  if (trimmed.length > 40) {
+    return { isValid: false, error: "Username cannot exceed 40 characters." };
   }
 
   if (!/^[a-zA-Z0-9]/.test(trimmed)) {

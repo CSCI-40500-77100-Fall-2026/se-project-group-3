@@ -20,8 +20,8 @@ describe("Input Validation Rules (2 Fields)", () => {
       expect(result.isValid).toBe(true);
     });
 
-    it("accepts maximum length of 20 characters", () => {
-      const result = validateUsername("a".repeat(20));
+    it("accepts maximum length of 40 characters", () => {
+      const result = validateUsername("a".repeat(40));
       expect(result.isValid).toBe(true);
     });
 
@@ -45,10 +45,10 @@ describe("Input Validation Rules (2 Fields)", () => {
       expect(result.error).toBe("Username must be at least 3 characters long.");
     });
 
-    it("rejects username longer than 20 characters", () => {
-      const result = validateUsername("a".repeat(21));
+    it("rejects username longer than 40 characters", () => {
+      const result = validateUsername("a".repeat(41));
       expect(result.isValid).toBe(false);
-      expect(result.error).toBe("Username cannot exceed 20 characters.");
+      expect(result.error).toBe("Username cannot exceed 40 characters.");
     });
 
     it("rejects username starting with a symbol (underscore or hyphen)", () => {
