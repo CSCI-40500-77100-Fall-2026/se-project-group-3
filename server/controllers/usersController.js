@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const { setAuthCookie, clearAuthCookie, setPendingCookie, clearPendingCookie } = require("../utils/authCookie");
+const { validateUsername, validatePassword } = require("../utils/validation");
 
 // http://localhost:3000/users/me
 const getCurrentUser = async (req, res) => {
@@ -23,33 +24,42 @@ const getCurrentUser = async (req, res) => {
 
 // http://localhost:3000/users/signup
 const createUser = async (req, res) => {
-	try{
+	try {
+		const { username, password } = req.body ?? {};
 
-			const { username, password } = req.body;
+		const usernameCheck = validateUsername(username);
+		if (!usernameCheck.isValid) {
+			return res.status(400).json({ message: usernameCheck.error });
+		}
 
-			const existingUser = await User.findOne({ 
-				username: username 
-			});
-			if (existingUser || !username || !password) {
-				return res.status(409).json({ message: "Username already exists or invalid input" });
-			}
+		const passwordCheck = validatePassword(password);
+		if (!passwordCheck.isValid) {
+			return res.status(400).json({ message: passwordCheck.error });
+		}
 
-			const hashedPassword = await bcrypt.hash(password, 10);
+		const existingUser = await User.findOne({ 
+			username: username.trim() 
+		});
+		if (existingUser) {
+			return res.status(409).json({ message: "Username already exists." });
+		}
 
-		  const newUser = await User.create({
-				username: username,
-				password: hashedPassword,
-			});
+		const hashedPassword = await bcrypt.hash(password, 10);
 
-			await newUser.save();
-		
-			res.status(201).json({
-				message: "User created successfully",
-				user: newUser
-			});
-	}
-	catch (err) {
-		console.log(err)
+		const newUser = await User.create({
+			username: username.trim(),
+			password: hashedPassword,
+		});
+
+		await newUser.save();
+	
+		return res.status(201).json({
+			message: "User created successfully",
+			user: newUser
+		});
+	} catch (err) {
+		console.error("Error creating user:", err);
+		return res.status(500).json({ message: "An error occurred while creating your account. Please try again later." });
 	}
 };
 

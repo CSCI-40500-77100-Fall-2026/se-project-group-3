@@ -26,9 +26,13 @@ jobs:
         working-directory: client
         run: npm ci
 
-      - name: Run tests
+      - name: Run client tests
         working-directory: client
         run: npm test
+
+      - name: Run server tests
+        working-directory: server
+        run: node --test tests/**/*.test.js
 
       - name: Build application
         working-directory: client
